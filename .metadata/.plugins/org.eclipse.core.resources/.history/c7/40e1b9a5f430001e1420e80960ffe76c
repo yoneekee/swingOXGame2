@@ -1,0 +1,20 @@
+package Main;
+
+import DAO.QuizDAO;
+import DTO.QuizDTO;
+
+public class OXGameMain {
+
+	public static void main(String[] args) {
+		OXGame oxg = new OXGame();
+		
+		QuizDTO dto = new QuizDTO();
+		QuizDAO dao = new QuizDAO();
+
+		int num = dao.getQuizCount();
+		int randomNum = (int) (Math.random() * num) + 1;
+		
+		dto = dao.getRandomData();
+	}
+
+}

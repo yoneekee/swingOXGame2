@@ -1,0 +1,8 @@
+package Main;
+
+import DTO.QuizDTO;
+
+public class DAOTEST {
+
+	QuizDTO dto = new QuizDTO();
+}

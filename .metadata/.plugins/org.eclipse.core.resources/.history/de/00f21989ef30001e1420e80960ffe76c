@@ -1,0 +1,118 @@
+package DAO;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import DTO.QuizDTO;
+
+public class QuizDAO {
+    private Connection cn = null;
+
+    public QuizDAO() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://localhost:5432/testdb";
+            String id  = "testuser";
+            String psw = "testpass";
+            cn = DriverManager.getConnection(url, id, psw);
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    // Create
+    public void addQuiz(QuizDTO quiz)  {
+        String sql = "INSERT INTO quiz (question, answer, author) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
+            pstmt.setString(1, quiz.getQuestion());
+            pstmt.setBoolean(2, quiz.isAnswer());
+            pstmt.setString(3, quiz.getAuthor());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+        	
+        }
+    }
+
+    // Read
+    
+    public QuizDTO oneDto(int id) throws SQLException {
+    	QuizDTO quiz = new QuizDTO();
+    	String sql = "SELECT * FROM quiz WHERE id = " + id;
+    	try (PreparedStatement pstmt = cn.prepareStatement(sql);
+                ResultSet rs = pstmt.executeQuery()) {
+            String question = rs.getString("question");
+            boolean answer = rs.getBoolean("answer");
+            String author = rs.getString("author");
+
+            quiz.setQuestion(question);
+            quiz.setAnswer(answer);
+            quiz.setAuthor(author);
+            quiz.setId(id);
+    	}
+    	return quiz;
+    }	
+    
+    public List<QuizDTO> getAllQuizzes() throws SQLException {
+        List<QuizDTO> quizzes = new ArrayList<>();
+        String sql = "SELECT * FROM quiz";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String question = rs.getString("question");
+                boolean answer = rs.getBoolean("answer");
+                String author = rs.getString("author");
+                QuizDTO quiz = new QuizDTO();
+                quiz.setQuestion(question);
+                quiz.setAnswer(answer);
+                quiz.setAuthor(author);
+                quiz.setId(id);
+                quizzes.add(quiz);
+            }
+        }
+        return quizzes;
+    }
+
+    // Update
+    public void updateQuiz(QuizDTO quiz) throws SQLException {
+        String sql = "UPDATE quiz SET question=?, answer=?, author=? WHERE id=?";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
+            pstmt.setString(1, quiz.getQuestion());
+            pstmt.setBoolean(2, quiz.isAnswer());
+            pstmt.setString(3, quiz.getAuthor());
+            pstmt.setInt(4, quiz.getId());
+            pstmt.executeUpdate();
+        }
+    }
+
+    // Delete
+    public void deleteQuiz(int id) throws SQLException {
+        String sql = "DELETE FROM quiz WHERE id=?";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        }
+    }
+    
+    // Counting total question numbers
+    public int getQuizCount() throws SQLException {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM quiz";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        }
+        return count;
+    }
+}
