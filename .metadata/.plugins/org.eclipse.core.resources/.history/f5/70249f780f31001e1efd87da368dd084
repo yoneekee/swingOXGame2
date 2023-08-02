@@ -43,7 +43,7 @@ public class OXGame extends JFrame {
 		// center panel
 	    JPanel centerPanel = new JPanel(new BorderLayout());
 	    JPanel centerPanelNorth = new JPanel(new GridLayout(3, 1, 0, 10)); 
-	    JLabel centerTitle = new JLabel("ゲームの結果は？？？？");
+	    JLabel centerTitle = new JLabel("タイトル");
 	    JLabel quizTitle = new JLabel("クイズの内容");
 	    JLabel quizContent = new JLabel(dto.getQuestion());
 	    JPanel centerPanelCenter = new JPanel(new GridLayout(2, 3, 20, 20)); 
