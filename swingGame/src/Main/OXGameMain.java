@@ -11,6 +11,7 @@ public class OXGameMain {
 		dto = dao.getRandomData();
 		
 		OXGame oxg = new OXGame(dto);
+		
 	}
 
 }

@@ -1,0 +1,41 @@
+CREATE TABLE quiz (
+    id SERIAL PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer BOOLEAN NOT NULL,
+    author VARCHAR(20)
+);
+
+
+CREATE TABLE quizResult (
+	id INTEGER Primary Key,
+	author CHARACTER VARYING(20),
+	gameResult INTEGER
+); 
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE quiz TO testuser;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE quizResult TO testuser;
+
+//////////////////
+
+INSERT INTO quiz (question, answer, author) VALUES
+('日本の首都は東京ですか。', true, 'ユーザー1'),
+('韓国の首都はソウルですか。', true, 'ユーザー2'),
+('中国の首都は北京ですか。', true, 'ユーザー3'),
+('アメリカの首都はワシントンD.C.ですか。', true, 'ユーザー4'),
+('フランスの首都はパリですか。', true, 'ユーザー5'),
+('イギリスの首都はロンドンですか。', true, 'ユーザー6'),
+('ドイツの首都はベルリンですか。', true, 'ユーザー7'),
+('イタリアの首都はローマですか。', true, 'ユーザー8'),
+('ブラジルの首都はブラジリアですか。', true, 'ユーザー9'),
+('ロシアの首都はモスクワですか。', true, 'ユーザー10'),
+('フランスの首都はマルセイユですか。', false, 'ユーザー11'),
+('イギリスの首都はマンチェスターですか。', false, 'ユーザー12'),
+('ドイツの首都はハンブルクですか。', false, 'ユーザー13'),
+('イタリアの首都はフィレンツェですか。', false, 'ユーザー14'),
+('ブラジルの首都はリオデジャネイロですか。', false, 'ユーザー15'),
+('ロシアの首都はサンクトペテルブルクですか。', false, 'ユーザー16'),
+('スペインの首都はマドリードですか。', true, 'ユーザー17'),
+('韓国の首都はbusanですか。', false, 'ユーザー18'),
+('日本の首都は京都ですか。', false, 'ユーザー19'),
+('中国の首都は上海ですか。', false, 'ユーザー20');

@@ -107,14 +107,18 @@ public class QuizDAO {
     }
 
     // Delete
-    public void deleteQuiz(int id) {
+    public int deleteQuiz(int id) {
         String sql = "DELETE FROM quiz WHERE id=?";
+        int result = 0;
         try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
+            result = 1;
+            return result;
         } catch (SQLException e) {
         	e.printStackTrace();
         }
+        return result;
     }
     
     // Counting total question numbers

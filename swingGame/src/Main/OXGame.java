@@ -2,6 +2,7 @@ package Main;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -16,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -31,6 +33,8 @@ public class OXGame extends JFrame {
 	
 	QuizDAO dao = new QuizDAO();
 	QuizResultDAO dao_qr = new QuizResultDAO();
+	
+	
 	
      public OXGame(QuizDTO dto) {
     	result = dto.isAnswer();
@@ -140,18 +144,33 @@ public class OXGame extends JFrame {
          				myChoice = true;
          				if(myChoice != result) {
          					QuizDTO newDto = new QuizDTO();
-         					newDto = dao.getRandomData();
+         					while(true) {
+         						newDto = dao.getRandomData();
+         						if(newDto.getQuestion()==null) {
+         							continue;
+         						} else {
+         							break;
+         						}
+         					}
+         					//System.out.println(newDto.getId() + ":" + newDto.getQuestion());
          					quizContent.setText(newDto.getQuestion());
          					result = newDto.isAnswer();
          					makingPersonWho.setText(newDto.getAuthor());
-         					
          					centerTitle.setText("You are Wrong!");
          				} else {
          					answerSum++;
-         					kaitou.setText(Integer.toString(answerSum));
-         					
+         					kaitou.setText(Integer.toString(answerSum));    					
          					QuizDTO newDto = new QuizDTO();
-         					newDto = dao.getRandomData();
+         					
+         					while(true) {
+         						newDto = dao.getRandomData();
+         						if(newDto.getQuestion()==null) {
+         							continue;
+         						} else {
+         							break;
+         						}
+         					}
+         					//System.out.println(newDto.getId() + ":" + newDto.getQuestion());
          					quizContent.setText(newDto.getQuestion());
          					result = newDto.isAnswer();
          					makingPersonWho.setText(newDto.getAuthor());
@@ -168,7 +187,15 @@ public class OXGame extends JFrame {
          				myChoice = false;
          				if(myChoice != result) {
          					QuizDTO newDto = new QuizDTO();
-         					newDto = dao.getRandomData();
+         					while(true) {
+         						newDto = dao.getRandomData();
+         						if(newDto.getQuestion()==null) {
+         							continue;
+         						} else {
+         							break;
+         						}
+         					}
+         					//System.out.println(newDto.getId() + ":" + newDto.getQuestion());
          					quizContent.setText(newDto.getQuestion());
          					result = newDto.isAnswer();
          					makingPersonWho.setText(newDto.getAuthor());
@@ -177,11 +204,18 @@ public class OXGame extends JFrame {
          					answerSum++;
          					kaitou.setText(Integer.toString(answerSum));
          					QuizDTO newDto = new QuizDTO();
-         					newDto = dao.getRandomData();
+         					while(true) {
+         						newDto = dao.getRandomData();
+         						if(newDto.getQuestion()==null) {
+         							continue;
+         						} else {
+         							break;
+         						}
+         					}
+         					//System.out.println(newDto.getId() + ":" + newDto.getQuestion());
          					quizContent.setText(newDto.getQuestion());
          					result = newDto.isAnswer();
          					makingPersonWho.setText(newDto.getAuthor());
-         					
          					centerTitle.setText("You are Right!");
          				}
          			}
@@ -292,23 +326,77 @@ public class OXGame extends JFrame {
              }
          });
          
+      
+         
          hensyu.addActionListener(new ActionListener() {
-             @Override
-             public void actionPerformed(ActionEvent e) {
-                 JFrame newFrame = new JFrame("Edit");
-                 newFrame.setVisible(true);
-                 newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                 newFrame.setSize(600, 600);
-                 
-                 List<QuizDTO> listQuiz = dao.getAllQuizzes();
-                 
-                 for(int i = 0; i < listQuiz.size(); i++) {
-                	 
-                 }
-            
-             }
-         });
-         
-         
+        	    @Override
+        	    public void actionPerformed(ActionEvent e) {
+        	        JFrame newFrame = new JFrame("Edit");
+        	        newFrame.setVisible(true);
+        	        newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        	        newFrame.setSize(600, 600);
+
+        	        List<QuizDTO> listQuiz = dao.getAllQuizzes();
+        	        int quizCnt = listQuiz.size();
+        	        
+        	        JPanel mainPanel = new JPanel(new GridLayout(quizCnt, 1, 10, 10));
+
+        	        for (int i = 0; i < quizCnt; i++) {
+        	            QuizDTO quiz = listQuiz.get(i);
+        	            JPanel quizPanel = createQuizPanel(quiz);
+
+        	            mainPanel.add(quizPanel);
+        	        }
+        	        
+        	        JScrollPane scrollPane = new JScrollPane(mainPanel);
+        	        newFrame.add(scrollPane);
+        	    }
+        	});
+        
      }
+     
+     
+     // Hensyu 화면에서 쓰이는 기능에 대한 함수
+     public JPanel createQuizPanel(QuizDTO quiz) {
+	    JPanel panel = new JPanel(new FlowLayout());
+	    JLabel id = new JLabel(Integer.toString(quiz.getId()));
+	    JLabel author = new JLabel(quiz.getAuthor());
+	    JLabel result = new JLabel(quiz.getQuestion());
+	    
+
+	    JButton delBtn = new JButton("削除");
+	    JButton modiBtn = new JButton("修正");
+
+	    // 삭제 버튼의 ActionListener 추가
+	    delBtn.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            System.out.println("Delete button clicked for quiz with ID: " + quiz.getId());
+	        	int result = dao.deleteQuiz(quiz.getId());
+	        	
+	        	if(result == 0) {
+	        		System.out.println("Delete Failed....");
+	        	} else if (result >= 1) {
+	        		System.out.println("Delete success.....");
+	        	}
+	        }
+	    });
+
+	    // 수정 버튼의 ActionListener 추가
+	    modiBtn.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            System.out.println("Modify button clicked for quiz with ID: " + quiz.getId());
+	        }
+	    });
+
+	    panel.add(id);
+	    panel.add(author);
+	    panel.add(result);
+	    panel.add(delBtn);
+	    panel.add(modiBtn);
+
+	    return panel;
+    }
+
 }

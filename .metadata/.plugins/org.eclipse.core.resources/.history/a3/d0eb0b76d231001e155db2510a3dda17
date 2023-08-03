@@ -1,0 +1,17 @@
+CREATE TABLE quiz (
+    id SERIAL PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer BOOLEAN NOT NULL,
+    author VARCHAR(20)
+);
+
+
+CREATE TABLE quizResult (
+	id INTEGER Primary Key,
+	author CHARACTER VARYING(20),
+	gameResult INTEGER
+); 
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE quiz TO testuser;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE quizResult TO testuser;
