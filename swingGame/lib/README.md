@@ -39,3 +39,8 @@ INSERT INTO quiz (question, answer, author) VALUES
 ('韓国の首都はbusanですか。', false, 'ユーザー18'),
 ('日本の首都は京都ですか。', false, 'ユーザー19'),
 ('中国の首都は上海ですか。', false, 'ユーザー20');
+
+//////////////////////////////////////////////////////
+SELECT a.id AS id, a.author AS author, b.gameresult as gameresult 
+FROM QUIZ a JOIN QUIZRESULT b ON a.id = b.id
+ORDER BY b.gameresult DESC;
