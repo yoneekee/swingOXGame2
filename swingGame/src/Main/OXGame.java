@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -19,19 +20,23 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import DAO.QuizDAO;
+import DAO.QuizResultDAO;
 import DTO.QuizDTO;
+import DTO.QuizResultDTO;
 
 public class OXGame extends JFrame {
 	boolean myChoice;
 	int answerSum;
 	boolean result;
+	
 	QuizDAO dao = new QuizDAO();
+	QuizResultDAO dao_qr = new QuizResultDAO();
 	
      public OXGame(QuizDTO dto) {
-    	// declare, initialize
     	result = dto.isAnswer();
     	myChoice = true;
     	answerSum = 0;
+    	int nextId_qr = dao_qr.getNextId();
     	 
     	// total conatiner
 		Container contentPane = getContentPane();
@@ -50,24 +55,29 @@ public class OXGame extends JFrame {
 	    JLabel answerTitle = new JLabel("クイズの解答");
 	    JButton answerO = new JButton("O");
 	    JButton answerX = new JButton("X");
-	    JLabel answerPerson = new JLabel("作成者");
-	    JLabel answerPersonWho = new JLabel(dto.getAuthor());
-	    JButton sousin = new JButton("送信");
+	    JLabel makingPerson = new JLabel("クイズの作成者");
+	    JLabel makingPersonWho = new JLabel(dto.getAuthor());
 	    
 	    // south panel
 	    JPanel southPanel = new JPanel(new BorderLayout());
 	    JPanel southPanelTable = new JPanel(new GridLayout(2, 6, 20, 10));
 	    JLabel register = new JLabel("[ 登録クイズ一覧：プレイ ]");
-	    JLabel registerNotice = new JLabel("登録されているクイズはありません。");
 	    
-	    JLabel id = new JLabel(Integer.toString(dto.getId()));
-	    JTextField naiyou = new JTextField(3);
-	    JTextField kaitou = new JTextField(3);
-	    JLabel sakuseisha = new JLabel(dto.getAuthor());
+	    int quizCount = dao.getQuizCount();
+	    JLabel registerNotice; 
 	    
-	    JButton hensyu = new JButton("編集");
-	    JButton sakujyo = new JButton("削除");
+	    if(quizCount <= 0) {
+	    	registerNotice = new JLabel("登録されているクイズはありません。");
+	    } else {
+	    	registerNotice = new JLabel("OXゲームを楽しんでください　^_^!!! ");
+	    }
 	    
+	    JLabel id = new JLabel(Integer.toString(nextId_qr));
+	    JLabel kaitou = new JLabel("0");
+	    JTextField sakuseisha = new JTextField(3);
+	    JButton sousin = new JButton("送信");
+	    JButton tsuika = new JButton("追加");
+	    JButton hensyu = new JButton("編集"); 
 	    
     	 setTitle("OXクイズアプリ：CRUD");
          setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -91,27 +101,26 @@ public class OXGame extends JFrame {
          centerPanelCenter.add(answerO);
          centerPanelCenter.add(answerX);
 
-         centerPanelCenter.add(answerPerson);
-         centerPanelCenter.add(answerPersonWho);
-         centerPanelCenter.add(sousin);
+         centerPanelCenter.add(makingPerson);
+         centerPanelCenter.add(makingPersonWho);
          
          centerPanel.add(centerPanelNorth, BorderLayout.NORTH);
          centerPanel.add(centerPanelCenter, BorderLayout.SOUTH);
 
          // South Panel
          southPanelTable.add(new JLabel("ID"));
-         southPanelTable.add(new JLabel("内容"));
          southPanelTable.add(new JLabel("解答"));
          southPanelTable.add(new JLabel("作成者"));
+         southPanelTable.add(new JLabel("送信"));
+         southPanelTable.add(new JLabel("追加"));
          southPanelTable.add(new JLabel("編集"));
-         southPanelTable.add(new JLabel("削除"));
          
          southPanelTable.add(id);
-         southPanelTable.add(naiyou);
          southPanelTable.add(kaitou);
          southPanelTable.add(sakuseisha);
+         southPanelTable.add(sousin);
+         southPanelTable.add(tsuika);
          southPanelTable.add(hensyu);
-         southPanelTable.add(sakujyo);
          
          register.setFont(new Font("Meiryo", Font.PLAIN, 16));
          southPanel.add(register, BorderLayout.NORTH);
@@ -134,9 +143,7 @@ public class OXGame extends JFrame {
          					newDto = dao.getRandomData();
          					quizContent.setText(newDto.getQuestion());
          					result = newDto.isAnswer();
-         					id.setText(Integer.toString(newDto.getId()));
-         					sakuseisha.setText(newDto.getAuthor());
-         					answerPersonWho.setText(newDto.getAuthor());
+         					makingPersonWho.setText(newDto.getAuthor());
          					
          					centerTitle.setText("You are Wrong!");
          				} else {
@@ -147,9 +154,7 @@ public class OXGame extends JFrame {
          					newDto = dao.getRandomData();
          					quizContent.setText(newDto.getQuestion());
          					result = newDto.isAnswer();
-         					id.setText(Integer.toString(newDto.getId()));
-         					sakuseisha.setText(newDto.getAuthor());
-         					answerPersonWho.setText(newDto.getAuthor());
+         					makingPersonWho.setText(newDto.getAuthor());
          					
          					centerTitle.setText("You are Right!");
          				}
@@ -166,22 +171,16 @@ public class OXGame extends JFrame {
          					newDto = dao.getRandomData();
          					quizContent.setText(newDto.getQuestion());
          					result = newDto.isAnswer();
-         					id.setText(Integer.toString(newDto.getId()));
-         					sakuseisha.setText(newDto.getAuthor());
-         					answerPersonWho.setText(newDto.getAuthor());
-         					
+         					makingPersonWho.setText(newDto.getAuthor());
          					centerTitle.setText("You are Wrong!");
          				} else {
          					answerSum++;
          					kaitou.setText(Integer.toString(answerSum));
-         					
          					QuizDTO newDto = new QuizDTO();
          					newDto = dao.getRandomData();
          					quizContent.setText(newDto.getQuestion());
          					result = newDto.isAnswer();
-         					id.setText(Integer.toString(newDto.getId()));
-         					sakuseisha.setText(newDto.getAuthor());
-         					answerPersonWho.setText(newDto.getAuthor());
+         					makingPersonWho.setText(newDto.getAuthor());
          					
          					centerTitle.setText("You are Right!");
          				}
@@ -192,12 +191,30 @@ public class OXGame extends JFrame {
          sousin.addMouseListener(
          		new MouseAdapter() {
          			public void mouseClicked(MouseEvent e) {
-         				System.out.println("sousin clicked........");
-         			}
+         				String qr_author = sakuseisha.getText();
+         				
+         				if(qr_author.equals("") || qr_author == null) {
+         					qr_author = "anonymousPlayer" + nextId_qr;
+         				}
+         				
+         				int qr_gameResult = Integer.parseInt(kaitou.getText());
+         				
+         				QuizResultDTO quizResult = new QuizResultDTO();
+         				quizResult.setAuthor(qr_author);
+         				quizResult.setId(nextId_qr);
+         				quizResult.setGameResult(qr_gameResult);
+         				
+         				int result = dao_qr.addQuizResult(quizResult);
+         				if(result == 1) {
+         					System.out.println("quizresult input success");
+         				} else {
+         					System.out.println("quizresult input failed");
+         				}
+          			}
  				}
          );
          
-         hensyu.addMouseListener(
+         tsuika.addMouseListener(
          		new MouseAdapter() {
          			public void mouseClicked(MouseEvent e) {
          				
@@ -205,10 +222,10 @@ public class OXGame extends JFrame {
  				}
          );
          
-         hensyu.addActionListener(new ActionListener() {
+         tsuika.addActionListener(new ActionListener() {
              @Override
              public void actionPerformed(ActionEvent e) {
-                 JFrame newFrame = new JFrame("New Window");
+                 JFrame newFrame = new JFrame("Add Quiz");
                  newFrame.setVisible(true);
                  newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                  
@@ -275,16 +292,23 @@ public class OXGame extends JFrame {
              }
          });
          
-         sakujyo.addMouseListener(
-         		new MouseAdapter() {
-         			public void mouseClicked(MouseEvent e) {
-         				//System.out.println("sakujyo clicked........");
-         				answerSum = 0;
-         				kaitou.setText(Integer.toString(answerSum));
-         			}
- 				}
-         );
+         hensyu.addActionListener(new ActionListener() {
+             @Override
+             public void actionPerformed(ActionEvent e) {
+                 JFrame newFrame = new JFrame("Edit");
+                 newFrame.setVisible(true);
+                 newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                 newFrame.setSize(600, 600);
+                 
+                 List<QuizDTO> listQuiz = dao.getAllQuizzes();
+                 
+                 for(int i = 0; i < listQuiz.size(); i++) {
+                	 
+                 }
+            
+             }
+         });
+         
+         
      }
-
-    
 }

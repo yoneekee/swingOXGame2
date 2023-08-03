@@ -1,0 +1,123 @@
+package DAO;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import DTO.QuizResultDTO;
+
+public class QuizResultDAO {
+
+	private Connection cn = null;
+	
+	public QuizResultDAO() {
+		try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://localhost:5432/testdb";
+            String id  = "testuser";
+            String psw = "testpass";
+            cn = DriverManager.getConnection(url, id, psw);
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+	}
+	
+	// SQL queries for CRUD operations
+    private static final String SQL_INSERT = "INSERT INTO quizResult (id, author, gameResult) VALUES (?, ?, ?)";
+    private static final String SQL_UPDATE = "UPDATE quizResult SET author=?, gameResult=? WHERE id=?";
+    private static final String SQL_DELETE = "DELETE FROM quizResult WHERE id=?";
+    private static final String SQL_SELECT_BY_ID = "SELECT id, author, gameResult FROM quizResult WHERE id=?";
+    private static final String SQL_SELECT_ALL = "SELECT * FROM quizResult";
+
+    // CREATE (Add a new QuizResultDTO object to the database)
+    public void addQuizResult(QuizResultDTO quizResult) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT)) {
+
+            preparedStatement.setInt(1, quizResult.getId());
+            preparedStatement.setString(2, quizResult.getAuthor());
+            preparedStatement.setInt(3, quizResult.getGameResult());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // READ (Retrieve a QuizResultDTO object by ID from the database)
+    public QuizResultDTO getQuizResultById(int id) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_BY_ID)) {
+
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                QuizResultDTO quizResult = new QuizResultDTO();
+                quizResult.setId(resultSet.getInt("id"));
+                quizResult.setAuthor(resultSet.getString("author"));
+                quizResult.setGameResult(resultSet.getInt("gameResult"));
+                return quizResult;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if the QuizResultDTO with the given ID is not found
+    }
+
+    // UPDATE (Update a QuizResultDTO object in the database)
+    public void updateQuizResult(QuizResultDTO updatedQuizResult) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE)) {
+
+            preparedStatement.setString(1, updatedQuizResult.getAuthor());
+            preparedStatement.setInt(2, updatedQuizResult.getGameResult());
+            preparedStatement.setInt(3, updatedQuizResult.getId());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // DELETE (Remove a QuizResultDTO object by ID from the database)
+    public void deleteQuizResultById(int id) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE)) {
+
+            preparedStatement.setInt(1, id);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // READ (Retrieve all QuizResultDTO objects from the database)
+    public List<QuizResultDTO> getAllQuizResults() {
+        List<QuizResultDTO> quizResults = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_ALL)) {
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                QuizResultDTO quizResult = new QuizResultDTO();
+                quizResult.setId(resultSet.getInt("id"));
+                quizResult.setAuthor(resultSet.getString("author"));
+                quizResult.setGameResult(resultSet.getInt("gameResult"));
+                quizResults.add(quizResult);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quizResults;
+    }
+}

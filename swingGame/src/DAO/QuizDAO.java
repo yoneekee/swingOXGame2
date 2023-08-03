@@ -11,6 +11,8 @@ import java.util.List;
 import DTO.QuizDTO;
 
 public class QuizDAO {
+	
+	// GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE quiz TO testuser;
     private Connection cn = null;
 
     public QuizDAO() {
@@ -137,6 +139,8 @@ public class QuizDAO {
              ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
             	maxCnt = rs.getInt(1);
+            } else {
+            	maxCnt = 1;
             }
         } catch (SQLException e) {
         	e.printStackTrace();
@@ -158,7 +162,7 @@ public class QuizDAO {
     		inputAnswer = true;
     	}
     	
-    	QuizDTO quiz = new QuizDTO();
+    	
     	String sql = "INSERT INTO quiz VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
         	pstmt.setInt(1, nextId);

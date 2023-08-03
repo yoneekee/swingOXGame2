@@ -1,0 +1,125 @@
+package DAO;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import DTO.QuizResultDTO;
+
+public class QuizResultDAO {
+    private Connection cn = null;
+
+    public QuizResultDAO() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://localhost:5432/testdb";
+            String id  = "testuser";
+            String psw = "testpass";
+            cn = DriverManager.getConnection(url, id, psw);
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Create
+    public void addQuizResult(QuizResultDTO quizResult) {
+        String sql = "INSERT INTO quizResult (id, author, gameResult) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
+            pstmt.setInt(1, quizResult.getId());
+            pstmt.setString(2, quizResult.getAuthor());
+            pstmt.setInt(3, quizResult.getGameResult());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Read
+    public QuizResultDTO getQuizResultById(int id) {
+        QuizResultDTO quizResult = new QuizResultDTO();
+        String sql = "SELECT * FROM quizResult WHERE id = " + id;
+        try (PreparedStatement pstmt = cn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                String author = rs.getString("author");
+                int gameResult = rs.getInt("gameResult");
+
+                quizResult.setId(id);
+                quizResult.setAuthor(author);
+                quizResult.setGameResult(gameResult);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quizResult;
+    }
+
+    public List<QuizResultDTO> getAllQuizResults() {
+        List<QuizResultDTO> quizResults = new ArrayList<>();
+        String sql = "SELECT * FROM quizResult";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String author = rs.getString("author");
+                int gameResult = rs.getInt("gameResult");
+
+                QuizResultDTO quizResult = new QuizResultDTO();
+                quizResult.setId(id);
+                quizResult.setAuthor(author);
+                quizResult.setGameResult(gameResult);
+
+                quizResults.add(quizResult);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quizResults;
+    }
+
+    // Update
+    public void updateQuizResult(QuizResultDTO quizResult) {
+        String sql = "UPDATE quizResult SET author=?, gameResult=? WHERE id=?";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
+            pstmt.setString(1, quizResult.getAuthor());
+            pstmt.setInt(2, quizResult.getGameResult());
+            pstmt.setInt(3, quizResult.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Delete
+    public void deleteQuizResult(int id) {
+        String sql = "DELETE FROM quizResult WHERE id=?";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // getting next id number
+    public int getQuiz() {
+    	int maxCnt = 0;
+        String sql = "SELECT MAX(id) FROM quiz";
+        try (PreparedStatement pstmt = cn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+            	maxCnt = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        }
+        return maxCnt + 1;
+    }
+}
