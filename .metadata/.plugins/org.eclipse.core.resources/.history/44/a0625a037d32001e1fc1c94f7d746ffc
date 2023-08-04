@@ -1,0 +1,404 @@
+package Main;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import DAO.QuizDAO;
+import DAO.QuizResultDAO;
+import DTO.QuizDTO;
+import DTO.QuizResultDTO;
+
+public class OXGame extends JFrame {
+	boolean myChoice;
+	int answerSum;
+	boolean result;
+
+	QuizDAO dao = new QuizDAO();
+	QuizResultDAO dao_qr = new QuizResultDAO();
+
+	public OXGame(QuizDTO dto) {
+		result = dto.isAnswer();
+		myChoice = true;
+		answerSum = 0;
+		int nextId_qr = dao_qr.getNextId();
+
+		// total conatiner
+		Container contentPane = getContentPane();
+
+		// north panel
+		JPanel northPanel = new JPanel();
+		JLabel title = new JLabel("「OXクイズ」アプリ：CRUD");
+
+		// center panel
+		JPanel centerPanel = new JPanel(new BorderLayout());
+		JPanel centerPanelNorth = new JPanel(new GridLayout(3, 1, 0, 10));
+		JLabel centerTitle = new JLabel("ゲームの結果は？？？？");
+		JLabel quizTitle = new JLabel("クイズの内容");
+		JLabel quizContent = new JLabel(dto.getQuestion());
+		JPanel centerPanelCenter = new JPanel(new GridLayout(2, 3, 20, 20));
+		JLabel answerTitle = new JLabel("クイズの解答");
+		JButton answerO = new JButton("O");
+		JButton answerX = new JButton("X");
+		JLabel makingPerson = new JLabel("クイズの作成者");
+		JLabel makingPersonWho = new JLabel(dto.getAuthor());
+
+		// south panel
+		JPanel southPanel = new JPanel(new BorderLayout());
+		JPanel southPanelTable = new JPanel(new GridLayout(2, 6, 20, 10));
+		JLabel register = new JLabel("[ 登録クイズ一覧：プレイ ]");
+
+		int quizCount = dao.getQuizCount();
+		JLabel registerNotice;
+
+		if (quizCount <= 0) {
+			registerNotice = new JLabel("登録されているクイズはありません。");
+		} else {
+			registerNotice = new JLabel("OXゲームを楽しんでください　^_^!!! ");
+		}
+
+		JLabel id = new JLabel(Integer.toString(nextId_qr));
+		JLabel kaitou = new JLabel("0");
+		JTextField sakuseisha = new JTextField(3);
+		JButton sousin = new JButton("送信");
+		JButton tsuika = new JButton("追加");
+		JButton hensyu = new JButton("編集");
+
+		setTitle("OXクイズアプリ：CRUD");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setSize(850, 450);
+		setVisible(true);
+
+		contentPane.setLayout(new BorderLayout(20, 20));
+
+		// Top Title
+		title.setFont(new Font("Meiryo", Font.BOLD, 28));
+		northPanel.add(title);
+
+		// North Panel
+		centerTitle.setFont(new Font("Meiryo", Font.PLAIN, 20));
+		centerPanelNorth.add(centerTitle);
+		centerPanelNorth.add(quizTitle);
+		centerPanelNorth.add(quizContent);
+
+		// Center Panel
+		centerPanelCenter.add(answerTitle);
+		centerPanelCenter.add(answerO);
+		centerPanelCenter.add(answerX);
+
+		centerPanelCenter.add(makingPerson);
+		centerPanelCenter.add(makingPersonWho);
+
+		centerPanel.add(centerPanelNorth, BorderLayout.NORTH);
+		centerPanel.add(centerPanelCenter, BorderLayout.SOUTH);
+
+		// South Panel
+		southPanelTable.add(new JLabel("ID"));
+		southPanelTable.add(new JLabel("解答"));
+		southPanelTable.add(new JLabel("作成者"));
+		southPanelTable.add(new JLabel("結果を送信"));
+		southPanelTable.add(new JLabel("クイズ追加"));
+		southPanelTable.add(new JLabel("クイズ編集"));
+
+		southPanelTable.add(id);
+		southPanelTable.add(kaitou);
+		southPanelTable.add(sakuseisha);
+		southPanelTable.add(sousin);
+		southPanelTable.add(tsuika);
+		southPanelTable.add(hensyu);
+
+		register.setFont(new Font("Meiryo", Font.PLAIN, 16));
+		southPanel.add(register, BorderLayout.NORTH);
+		southPanel.add(southPanelTable, BorderLayout.CENTER);
+		southPanel.add(registerNotice, BorderLayout.SOUTH);
+
+		// Put components into contentPane using BorderLayout
+		contentPane.add(northPanel, BorderLayout.NORTH);
+		contentPane.add(centerPanel, BorderLayout.CENTER);
+		contentPane.add(southPanel, BorderLayout.SOUTH);
+
+		answerO.addMouseListener(
+
+				new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						myChoice = true;
+						if (myChoice != result) {
+							QuizDTO newDto = new QuizDTO();
+							while (true) {
+								newDto = dao.getRandomData();
+								if (newDto.getQuestion() == null) {
+									continue;
+								} else {
+									break;
+								}
+							}
+							//System.out.println(newDto.getId() + ":" + newDto.getQuestion());
+							quizContent.setText(newDto.getQuestion());
+							result = newDto.isAnswer();
+							makingPersonWho.setText(newDto.getAuthor());
+							centerTitle.setText("You are Wrong!");
+						} else {
+							answerSum++;
+							kaitou.setText(Integer.toString(answerSum));
+							QuizDTO newDto = new QuizDTO();
+
+							while (true) {
+								newDto = dao.getRandomData();
+								if (newDto.getQuestion() == null) {
+									continue;
+								} else {
+									break;
+								}
+							}
+							//System.out.println(newDto.getId() + ":" + newDto.getQuestion());
+							quizContent.setText(newDto.getQuestion());
+							result = newDto.isAnswer();
+							makingPersonWho.setText(newDto.getAuthor());
+
+							centerTitle.setText("You are Right!");
+						}
+					}
+				});
+
+		answerX.addMouseListener(
+				new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						myChoice = false;
+						if (myChoice != result) {
+							QuizDTO newDto = new QuizDTO();
+							while (true) {
+								newDto = dao.getRandomData();
+								if (newDto.getQuestion() == null) {
+									continue;
+								} else {
+									break;
+								}
+							}
+							//System.out.println(newDto.getId() + ":" + newDto.getQuestion());
+							quizContent.setText(newDto.getQuestion());
+							result = newDto.isAnswer();
+							makingPersonWho.setText(newDto.getAuthor());
+							centerTitle.setText("You are Wrong!");
+						} else {
+							answerSum++;
+							kaitou.setText(Integer.toString(answerSum));
+							QuizDTO newDto = new QuizDTO();
+							while (true) {
+								newDto = dao.getRandomData();
+								if (newDto.getQuestion() == null) {
+									continue;
+								} else {
+									break;
+								}
+							}
+							//System.out.println(newDto.getId() + ":" + newDto.getQuestion());
+							quizContent.setText(newDto.getQuestion());
+							result = newDto.isAnswer();
+							makingPersonWho.setText(newDto.getAuthor());
+							centerTitle.setText("You are Right!");
+						}
+					}
+				});
+
+		sousin.addMouseListener(
+				new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						String qr_author = sakuseisha.getText();
+
+						if (qr_author.equals("") || qr_author == null) {
+							qr_author = "anonymousPlayer" + nextId_qr;
+						}
+
+						int qr_gameResult = Integer.parseInt(kaitou.getText());
+
+						QuizResultDTO quizResult = new QuizResultDTO();
+						quizResult.setAuthor(qr_author);
+						quizResult.setId(nextId_qr);
+						quizResult.setGameResult(qr_gameResult);
+
+						int result = dao_qr.addQuizResult(quizResult);
+						if (result == 1) {
+							System.out.println("quizresult input success");
+						} else {
+							System.out.println("quizresult input failed");
+						}
+					}
+				});
+
+		tsuika.addMouseListener(
+				new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+
+					}
+				});
+
+		tsuika.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame newFrame = new JFrame("Add Quiz");
+				newFrame.setVisible(true);
+				newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+				newFrame.setSize(430, 200);
+				JLabel label = new JLabel("新しい問題を入力してください。");
+				label.setHorizontalAlignment(SwingConstants.CENTER);
+
+				JPanel input = new JPanel(new GridLayout(3, 2, 10, 10));
+				JTextField authorInput = new JTextField(4);
+				JTextField questionInput = new JTextField(4);
+				final String[] answer = { "" };
+
+				// 라디오 버튼 생성
+				JRadioButton radioButton1 = new JRadioButton("YES");
+				JRadioButton radioButton2 = new JRadioButton("NO");
+
+				// 라디오 버튼 그룹 생성
+				ButtonGroup buttonGroup = new ButtonGroup();
+				buttonGroup.add(radioButton1);
+				buttonGroup.add(radioButton2);
+				JPanel answerInput = new JPanel();
+
+				answerInput.add(radioButton1);
+				answerInput.add(radioButton2);
+
+				ActionListener radioListener = event -> {
+					JRadioButton source = (JRadioButton) event.getSource();
+					answer[0] = source.getText();
+					System.out.println("answer :: " + answer);
+				};
+
+				radioButton1.addActionListener(radioListener);
+				radioButton2.addActionListener(radioListener);
+
+				input.add(new JLabel("Author"));
+				input.add(authorInput);
+				input.add(new JLabel("Question"));
+				input.add(questionInput);
+				input.add(new JLabel("Answer"));
+				input.add(answerInput);
+
+				JButton newQbtn = new JButton("新問題送信");
+				newQbtn.setHorizontalAlignment(SwingConstants.CENTER);
+
+				newFrame.add(label, BorderLayout.NORTH);
+				newFrame.add(input, BorderLayout.CENTER);
+				newFrame.add(newQbtn, BorderLayout.SOUTH);
+
+				newQbtn.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						String question = questionInput.getText();
+						String author = authorInput.getText();
+
+						// dao.newQuestionInput 메서드를 ActionListener 내부에서 호출
+						int result = dao.newQuestionInput(question, author, answer[0]);
+						if (result == 1) {
+							System.out.println("input success.");
+						} else {
+							System.out.println("input failed.");
+						}
+					}
+				});
+			}
+		});
+
+		hensyu.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame newFrame = new JFrame("Edit");
+				newFrame.setVisible(true);
+				newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				newFrame.setSize(600, 600);
+
+				List<QuizDTO> listQuiz = dao.getAllQuizzes();
+				int quizCnt = listQuiz.size();
+
+				JPanel mainPanel = new JPanel(new GridLayout(quizCnt, 1, 10, 10));
+
+				for (int i = 0; i < quizCnt; i++) {
+					QuizDTO quiz = listQuiz.get(i);
+					JPanel quizPanel = createQuizPanel(quiz);
+
+					mainPanel.add(quizPanel);
+				}
+
+				JScrollPane scrollPane = new JScrollPane(mainPanel);
+				newFrame.add(scrollPane);
+			}
+		});
+
+	}
+
+	// Hensyu 화면에서 쓰이는 기능에 대한 함수
+	public JPanel createQuizPanel(QuizDTO quiz) {
+		JPanel panel = new JPanel(new FlowLayout());
+		JLabel id = new JLabel(Integer.toString(quiz.getId()));
+		JLabel author = new JLabel(quiz.getAuthor());
+		JLabel result = new JLabel(quiz.getQuestion());
+
+		JButton delBtn = new JButton("削除");
+		JButton modiBtn = new JButton("修正");
+
+		// 삭제 버튼의 ActionListener 추가
+		delBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//System.out.println("Delete button clicked for quiz with ID: " + quiz.getId());
+				int result = dao.deleteQuiz(quiz.getId());
+
+				if (result == 0) {
+					System.out.println("Delete Failed....");
+				} else if (result >= 1) {
+					System.out.println("Delete success.....");
+				}
+			}
+		});
+
+		// 수정 버튼의 ActionListener 추가
+		modiBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int modId = quiz.getId();
+				QuizDTO modifiedDto = new QuizDTO();
+				
+				System.out.println("Modify button clicked for quiz with ID: " + modId);
+
+				JFrame newFrame = new JFrame("Modify Question");
+				newFrame.setVisible(true);
+				newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				newFrame.setSize(600, 600);
+				
+				JPanel idPanel = new JPanel(new FlowLayout());
+				JLabel id1 = new JLabel("ID");
+				JLabel id2 = new JLabel(Integer.toString(modId));
+				idPanel.add(id1);
+				idPanel.add(id2);
+			}
+		});
+
+		panel.add(id);
+		panel.add(author);
+		panel.add(result);
+		panel.add(delBtn);
+		panel.add(modiBtn);
+
+		return panel;
+	}
+
+}

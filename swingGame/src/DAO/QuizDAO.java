@@ -71,7 +71,7 @@ public class QuizDAO {
     
     public List<QuizDTO> getAllQuizzes() {
         List<QuizDTO> quizzes = new ArrayList<>();
-        String sql = "SELECT * FROM quiz";
+        String sql = "SELECT * FROM quiz ORDER BY id ASC";
         try (PreparedStatement pstmt = cn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
@@ -93,7 +93,8 @@ public class QuizDAO {
     }
 
     // Update
-    public void updateQuiz(QuizDTO quiz) {
+    public int updateQuiz(QuizDTO quiz) {
+    	int result = 0;
         String sql = "UPDATE quiz SET question=?, answer=?, author=? WHERE id=?";
         try (PreparedStatement pstmt = cn.prepareStatement(sql)) {
             pstmt.setString(1, quiz.getQuestion());
@@ -101,9 +102,13 @@ public class QuizDAO {
             pstmt.setString(3, quiz.getAuthor());
             pstmt.setInt(4, quiz.getId());
             pstmt.executeUpdate();
+            result = 1;
+            return result;
         } catch (SQLException e) {
         	e.printStackTrace();
         }
+        
+        return result;
     }
 
     // Delete
