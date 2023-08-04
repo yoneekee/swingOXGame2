@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,6 +21,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import DAO.QuizDAO;
 import DAO.QuizResultDAO;
@@ -30,99 +32,101 @@ public class OXGame extends JFrame {
 	boolean myChoice;
 	int answerSum;
 	boolean result;
-
+	
 	QuizDAO dao = new QuizDAO();
 	QuizResultDAO dao_qr = new QuizResultDAO();
 
 	public OXGame(QuizDTO dto) {
 		result = dto.isAnswer();
-		myChoice = true;
-		answerSum = 0;
-		int nextId_qr = dao_qr.getNextId();
+        myChoice = true;
+        answerSum = 0;
+        int nextId_qr = dao_qr.getNextId();
 
-		// total conatiner
-		Container contentPane = getContentPane();
+        // Total container
+        Container contentPane = getContentPane();
 
-		// north panel
-		JPanel northPanel = new JPanel();
-		JLabel title = new JLabel("「OXクイズ」アプリ：CRUD");
+        // North panel
+        JPanel northPanel = new JPanel();
+        JLabel title = new JLabel("「OXクイズ」アプリ：CRUD");
+        title.setFont(new Font("Meiryo", Font.BOLD, 28));
+        northPanel.add(title);
+        
+        // PADDING 
+        int paddingSize = 10;
+        Insets padding = new Insets(paddingSize, paddingSize, paddingSize, paddingSize);
 
-		// center panel
-		JPanel centerPanel = new JPanel(new BorderLayout());
-		JPanel centerPanelNorth = new JPanel(new GridLayout(3, 1, 0, 10));
-		JLabel centerTitle = new JLabel("ゲームの結果は？？？？");
-		JLabel quizTitle = new JLabel("クイズの内容");
-		JLabel quizContent = new JLabel(dto.getQuestion());
-		JPanel centerPanelCenter = new JPanel(new GridLayout(2, 3, 20, 20));
-		JLabel answerTitle = new JLabel("クイズの解答");
-		JButton answerO = new JButton("O");
-		JButton answerX = new JButton("X");
-		JLabel makingPerson = new JLabel("クイズの作成者");
-		JLabel makingPersonWho = new JLabel(dto.getAuthor());
+        // Center panel
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        JPanel centerPanelNorth = new JPanel(new GridLayout(3, 1, 0, 10));
+        JLabel centerTitle = new JLabel("ゲームの結果は？？？？");
+        centerTitle.setFont(new Font("Meiryo", Font.PLAIN, 20));
+        centerTitle.setBorder(new EmptyBorder(padding));
+        JLabel quizTitle = new JLabel("クイズの内容");
+        quizTitle.setBorder(new EmptyBorder(padding));
+        JLabel quizContent = new JLabel(dto.getQuestion());
+        quizContent.setBorder(new EmptyBorder(padding));
+        centerPanelNorth.add(centerTitle);
+        centerPanelNorth.add(quizTitle);
+        centerPanelNorth.add(quizContent);
 
-		// south panel
-		JPanel southPanel = new JPanel(new BorderLayout());
-		JPanel southPanelTable = new JPanel(new GridLayout(2, 6, 20, 10));
-		JLabel register = new JLabel("[ 登録クイズ一覧：プレイ ]");
+        JPanel centerPanelCenter = new JPanel(new GridLayout(2, 3, 20, 20));
+        JLabel answerTitle = new JLabel("クイズの解答");
+        answerTitle.setBorder(new EmptyBorder(padding));
+        JButton answerO = new JButton("O");
+        JButton answerX = new JButton("X");
+        JLabel makingPerson = new JLabel("クイズの作成者");
+        makingPerson.setBorder(new EmptyBorder(padding));
+        JLabel makingPersonWho = new JLabel(dto.getAuthor());
+        makingPersonWho.setBorder(new EmptyBorder(padding));
+        
+        centerPanelCenter.add(answerTitle);
+        centerPanelCenter.add(answerO);
+        centerPanelCenter.add(answerX);
+        centerPanelCenter.add(makingPerson);
+        centerPanelCenter.add(makingPersonWho);
+        centerPanel.add(centerPanelNorth, BorderLayout.NORTH);
+        centerPanel.add(centerPanelCenter, BorderLayout.CENTER);
 
-		int quizCount = dao.getQuizCount();
-		JLabel registerNotice;
+        // South panel
+        JPanel southPanel = new JPanel(new BorderLayout());
+        JPanel southPanelTable = new JPanel(new GridLayout(2, 6, 20, 10));
+        JLabel register = new JLabel("[ 登録クイズ一覧：プレイ ]");
+        register.setFont(new Font("Meiryo", Font.PLAIN, 16));
+        southPanel.add(register, BorderLayout.NORTH);
 
-		if (quizCount <= 0) {
-			registerNotice = new JLabel("登録されているクイズはありません。");
-		} else {
-			registerNotice = new JLabel("OXゲームを楽しんでください　^_^!!! ");
-		}
+        int quizCount = dao.getQuizCount();
+        JLabel registerNotice;
 
-		JLabel id = new JLabel(Integer.toString(nextId_qr));
-		JLabel kaitou = new JLabel("0");
-		JTextField sakuseisha = new JTextField(3);
-		JButton sousin = new JButton("送信");
-		JButton tsuika = new JButton("追加");
-		JButton hensyu = new JButton("編集");
+        if (quizCount <= 0) {
+            registerNotice = new JLabel("登録されているクイズはありません。");
+        } else {
+            registerNotice = new JLabel("OXゲームを楽しんでください　^_^!!! ");
+        }
+        registerNotice.setFont(new Font("Meiryo", Font.PLAIN, 14));
+        southPanel.add(registerNotice, BorderLayout.SOUTH);
 
-		setTitle("OXクイズアプリ：CRUD");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(850, 450);
-		setVisible(true);
+        JLabel id = new JLabel(Integer.toString(nextId_qr));
+        JLabel kaitou = new JLabel("0");
+        JTextField sakuseisha = new JTextField(3);
+        JButton sousin = new JButton("送信");
+        JButton tsuika = new JButton("追加");
+        JButton hensyu = new JButton("編集");
 
-		contentPane.setLayout(new BorderLayout(20, 20));
+        southPanelTable.add(new JLabel("ID"));
+        southPanelTable.add(new JLabel("解答"));
+        southPanelTable.add(new JLabel("作成者"));
+        southPanelTable.add(new JLabel("結果を送信"));
+        southPanelTable.add(new JLabel("クイズ追加"));
+        southPanelTable.add(new JLabel("クイズ編集"));
 
-		// Top Title
-		title.setFont(new Font("Meiryo", Font.BOLD, 28));
-		northPanel.add(title);
+        southPanelTable.add(id);
+        southPanelTable.add(kaitou);
+        southPanelTable.add(sakuseisha);
+        southPanelTable.add(sousin);
+        southPanelTable.add(tsuika);
+        southPanelTable.add(hensyu);
 
-		// North Panel
-		centerTitle.setFont(new Font("Meiryo", Font.PLAIN, 20));
-		centerPanelNorth.add(centerTitle);
-		centerPanelNorth.add(quizTitle);
-		centerPanelNorth.add(quizContent);
-
-		// Center Panel
-		centerPanelCenter.add(answerTitle);
-		centerPanelCenter.add(answerO);
-		centerPanelCenter.add(answerX);
-
-		centerPanelCenter.add(makingPerson);
-		centerPanelCenter.add(makingPersonWho);
-
-		centerPanel.add(centerPanelNorth, BorderLayout.NORTH);
-		centerPanel.add(centerPanelCenter, BorderLayout.SOUTH);
-
-		// South Panel
-		southPanelTable.add(new JLabel("ID"));
-		southPanelTable.add(new JLabel("解答"));
-		southPanelTable.add(new JLabel("作成者"));
-		southPanelTable.add(new JLabel("結果を送信"));
-		southPanelTable.add(new JLabel("クイズ追加"));
-		southPanelTable.add(new JLabel("クイズ編集"));
-
-		southPanelTable.add(id);
-		southPanelTable.add(kaitou);
-		southPanelTable.add(sakuseisha);
-		southPanelTable.add(sousin);
-		southPanelTable.add(tsuika);
-		southPanelTable.add(hensyu);
+        southPanel.add(southPanelTable, BorderLayout.CENTER);
 
 		register.setFont(new Font("Meiryo", Font.PLAIN, 16));
 		southPanel.add(register, BorderLayout.NORTH);
@@ -343,6 +347,15 @@ public class OXGame extends JFrame {
 			}
 		});
 
+		
+
+		
+		setTitle("OXクイズアプリ：CRUD");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(850, 450);
+        setLocationRelativeTo(null); // Center the window on the screen
+        setResizable(false);
+        setVisible(true);
 	}
 
 	// Hensyu 화면에서 쓰이는 기능에 대한 함수
