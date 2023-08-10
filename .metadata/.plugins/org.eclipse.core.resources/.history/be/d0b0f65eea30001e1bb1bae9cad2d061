@@ -1,9 +1,0 @@
-package DTO;
-
-public class QuizDTO {
-
-	private String id;
-	private String question;
-	private boolean answer;
-	private String author;
-}

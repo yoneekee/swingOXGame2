@@ -69,7 +69,7 @@ public class QuizResultDAO {
 
     public List<QuizResultDTO> getAllQuizResults() {
         List<QuizResultDTO> quizResults = new ArrayList<>();
-        String sql = "SELECT * FROM quizResult";
+        String sql = "SELECT * FROM quizResult ORDER BY quizResult DESC";
         try (PreparedStatement pstmt = cn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {

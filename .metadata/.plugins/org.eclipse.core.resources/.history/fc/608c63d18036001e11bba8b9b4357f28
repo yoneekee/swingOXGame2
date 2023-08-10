@@ -1,0 +1,19 @@
+package sdfsdgsdg;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+import DAO.QuizDAO;
+import DTO.QuizDTO;
+
+class sdfsdsgdsdg {
+
+	@Test
+	void test() {
+		QuizDTO dto = new QuizDTO();
+		QuizDAO dao = new QuizDAO();
+		fail("まだ実装されていません");
+	}
+
+}

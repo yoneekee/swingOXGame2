@@ -1,0 +1,13 @@
+package Main;
+
+import DAO.QuizDAO;
+import DTO.QuizDTO;
+
+public class OXGameMain {
+
+	public static void main(String[] args) {
+		OXGame oxg = new OXGame();
+		
+	}
+
+}

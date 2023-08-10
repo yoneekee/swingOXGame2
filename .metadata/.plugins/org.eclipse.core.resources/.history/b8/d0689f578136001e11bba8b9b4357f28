@@ -1,0 +1,17 @@
+@Test
+void testInsertQuiz() {
+    // Arrange
+    QuizDTO dto = new QuizDTO();
+    QuizDAO dao = new QuizDAO();
+    
+    dto.setAnswer(false);
+    dto.setId(dao.getNextId());
+    dto.setAuthor("sdfsgsdgsds");
+    dto.setQuestion("sdfsdgsdg");
+
+    // Act
+    boolean inserted = dao.insertQuiz(dto);
+
+    // Assert
+    assertTrue(inserted, "퀴즈 삽입이 실패했습니다.");
+}

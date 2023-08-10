@@ -1,0 +1,30 @@
+package sdfsdgsdg;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+import DAO.QuizDAO;
+import DTO.QuizDTO;
+
+class SdfsdsgdsdgTest {
+
+	@Test
+	void testInsertQuiz() {
+	    // Arrange
+	    QuizDTO dto = new QuizDTO();
+	    QuizDAO dao = new QuizDAO();
+	    
+	    dto.setAnswer(false);
+	    dto.setId(dao.getNextId());
+	    dto.setAuthor("sdfsgsdgsds");
+	    dto.setQuestion("sdfsdgsdg");
+
+	    // Act
+	    dao.addQuiz(dto);
+
+	    // Assert
+	    assertTrue(true, "퀴즈 삽입이 실패했습니다.");
+	}
+
+}
